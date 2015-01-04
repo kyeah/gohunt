@@ -28,8 +28,37 @@ func checkErr(t *testing.T, err error) {
 	}
 }
 
+func checkArray(t *testing.T, length int ) {
+	if length == 0 {
+		t.Log("No elements in array.")
+		t.Fail()
+	}
+}
+
 func TestGetPosts(t *testing.T) {
 	initClient(t)
-	_, err := client.GetPosts()
+	posts, err := client.GetPosts()
 	checkErr(t, err)
+	checkArray(t, len(posts))
+}
+
+func TestGetPreviousPosts(t *testing.T) {
+	initClient(t)
+	posts, err := client.GetPreviousPosts(5)
+	checkErr(t, err)
+	checkArray(t, len(posts))
+}
+
+func TestGetPostsOnDay(t *testing.T) {
+	initClient(t)
+	posts, err := client.GetPostsOnDay("2014-12-25")
+	checkErr(t, err)
+	checkArray(t, len(posts))
+}
+
+func TestGetAllPosts(t *testing.T) {
+	initClient(t)
+	posts, err := client.GetAllPosts("", 500, 1000, 3)
+	checkErr(t, err)
+	checkArray(t, len(posts))
 }
