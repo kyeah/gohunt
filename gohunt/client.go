@@ -5,22 +5,22 @@
 package gohunt
 
 import (
+	"bytes"
 	"encoding/json"
-	"net/http"
 	"net/url"
 	"golang.org/x/oauth2"
 )
 
 type Client struct {
-	OAuthClient  *http.Client
-	AuthToken    *Token
+	AuthToken      *Token
+	Authorization  string
 }
 
 type Token struct {
-	AccessToken string `json:"access_token"`
-	TokenType string `json:"token_type"`
-	Expiry float32 `json:"expires_in"`
-	Scope string `json:"scope"`
+	AccessToken  string   `json:"access_token"`
+	TokenType    string   `json:"token_type"`
+	Expiry       float32  `json:"expires_in"`
+	Scope        string   `json:"scope"`
 }
 
 // User-Authenticated Client with Developer Token
@@ -50,7 +50,7 @@ func RequestUserOAuthCode(clientID string, redirectUrl string, state string) err
 	)
 
 	reqUrl := config.AuthCodeURL(state, oauth2.AccessTypeOnline)
-	req := request{
+	req := Request{
 		url: reqUrl,
 		values: &url.Values{},
 	}
@@ -63,7 +63,7 @@ func RequestUserOAuthCode(clientID string, redirectUrl string, state string) err
 }
 
 // OAuth2 User-Authenticated Client with Access Grant Code
-func NewUserOAuthClient(clientID string, clientSecret string, redirectURL string, code string) (*Client, error) {
+func NewUserOAuthClient(clientID string, clientSecret string, redirectUrl string, code string) (*Client, error) {
 	var (
 		host = "api.producthunt.com"
 		base = "https://" + host
@@ -71,7 +71,7 @@ func NewUserOAuthClient(clientID string, clientSecret string, redirectURL string
 			ClientID: clientID,
 			ClientSecret: clientSecret,
 			Scopes: []string{ "public", "private" },
-			RedirectURL: base + "/v1/oauth/token",
+			RedirectURL: redirectUrl,
 			Endpoint: oauth2.Endpoint {
 				AuthURL:  base + "/v1/oauth/authorize",
 				TokenURL: base + "/v1/oauth/token",
@@ -98,7 +98,7 @@ func NewOAuthClient(clientID string, clientSecret string) (*Client, error) {
 		host = "api.producthunt.com"
 		base = "https://" + host
 		tokenURL = base + "/v1/oauth/token"
-		req = request{
+		req = Request{
 			url: tokenURL,
 			values: &url.Values{
 				"grant_type": { "client_credentials" },
@@ -123,9 +123,16 @@ func NewOAuthClient(clientID string, clientSecret string) (*Client, error) {
 }
 
 func GenAuthClient(tok *Token) *Client {
-	client := &http.Client{}
+	var buffer bytes.Buffer
+	buffer.WriteString("Bearer ")
+	buffer.WriteString(tok.AccessToken)
+
 	return &Client{
-		OAuthClient: client,
 		AuthToken: tok,
+		Authorization: buffer.String(),
 	}
+}
+
+func (c *Client) sendRequest(req *Request) (*bytes.Buffer, error) {
+	return req.getAuthResponse(c.Authorization)
 }

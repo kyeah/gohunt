@@ -12,18 +12,18 @@ import (
 	"net/url"
 )
 
-type request struct {
+type Request struct {
 	url        string
 	values     *url.Values
 	cookie     *http.Cookie
 	useragent  string
 }
 
-func (r request) getResponse() (*bytes.Buffer, error) {
+func (r Request) getResponse() (*bytes.Buffer, error) {
 	return r.getAuthResponse("")
 }
 
-func (r request) getAuthResponse(tok string) (*bytes.Buffer, error) {
+func (r Request) getAuthResponse(auth string) (*bytes.Buffer, error) {
 
 	// Determine the HTTP action.
 	var action, finalurl string
@@ -44,8 +44,8 @@ func (r request) getAuthResponse(tok string) (*bytes.Buffer, error) {
 		req.AddCookie(r.cookie)
 	}
 	req.Header.Set("User-Agent", r.useragent)
-	if tok != "" {
-		req.Header.Set("Authorization", tok)
+	if auth != "" {
+		req.Header.Set("Authorization", auth)
 	}
 
 	// Handle the request

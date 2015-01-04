@@ -21,6 +21,6 @@ type Comment struct {
 	Replies          []Comment  `json:"child_comments"`
 }
 
-func (c *Comment) String() string {
-	return fmt.Sprintf("%s: %s", c.User.Name, c.Body)
+func (c Comment) String() string {
+	return fmt.Sprintf("comment[%s: %s]", c.User.Name, c.Body)
 }
