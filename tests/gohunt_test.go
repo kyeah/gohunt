@@ -5,15 +5,19 @@ import (
 	"../gohunt"
 )
 
-func genClient(t *testing.T) *gohunt.Client {
-	client, err := gohunt.NewOAuthClient(
-		"clientId",
-		"clientSecret",
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return client
+var client *gohunt.Client
+
+func initClient(t *testing.T) {
+	if client == nil {
+		var err error
+		client, err = gohunt.NewOAuthClient(
+			"clientId",
+			"clientSecret",
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}	
 }
 
 func checkErr(t *testing.T, err error) {
@@ -24,7 +28,7 @@ func checkErr(t *testing.T, err error) {
 }
 
 func TestGetPosts(t *testing.T) {
-	client := genClient(t)
+	initClient(t)
 	_, err := client.GetPosts()
 	checkErr(t, err)
 }
