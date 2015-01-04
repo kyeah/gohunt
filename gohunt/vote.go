@@ -9,12 +9,12 @@ import (
 )
 
 type Vote struct {
-	ID             int
-	PostID         int
-	Created        float32
-	User           *User
+	ID             int     `json:"id"`
+	PostID         int     `json:"post_id"`
+	Created        string  `json:"created_at"`
+	User           User    `json:"user"`
 }
 
-func (p *Vote) String() string {
+func (v *Vote) String() string {
 	return fmt.Sprintf("Vote on post %s: %s", v.PostID, v.User.Name)
 }
