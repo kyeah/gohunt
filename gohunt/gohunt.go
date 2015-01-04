@@ -7,28 +7,25 @@ package gohunt
 import (
 	"encoding/json"
 	"net/url"
+	"strconv"
 )
 
 var (
 	base        = "https://api.producthunt.com"
 	postUrl     = base + "/v1/posts"
 	postAllUrl  = postUrl + "/all"
-	postShowUrl = postUrl + "/show"
 )
 
-type SinglePostResponse struct {
+type singlePostResponse struct {
 	Post Post `json:"post"`
 }
 
-type MultiPostResponse struct {
+type multiPostResponse struct {
 	Posts []Post `json:"posts"`
 }
 
 func (c *Client) GetPost(id int) (Post, error) {
-	values := &url.Values{
-		"id": { string(id) },
-	}
-	return c.submitShowPostRequest(postShowUrl, values)
+	return c.submitShowPostRequest(postUrl + "/" + strconv.Itoa(id), nil)
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
@@ -37,7 +34,7 @@ func (c *Client) GetPosts() ([]Post, error) {
 
 func (c *Client) GetPreviousPosts(daysAgo int) ([]Post, error) {
 	values := &url.Values{
-		"days_ago": { string(daysAgo) },
+		"days_ago": { strconv.Itoa(daysAgo) },
 	}
 	return c.submitPostRequest(postUrl, values)
 }
@@ -52,15 +49,15 @@ func (c *Client) GetPostsOnDay(day string) ([]Post, error) {
 func (c *Client) GetAllPosts(searchUrl string, olderThanID int, newerThanID int, count int) ([]Post, error) {	
 	values := &url.Values{}
 	if searchUrl != ""  { values.Add("search[url]", searchUrl)     }
-	if olderThanID > -1 { values.Add("older", string(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", string(newerThanID)) }
-	if count > -1       { values.Add("per_page", string(count))    }
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
 
 	return c.submitPostRequest(postAllUrl, values)
 }
 
 func (c *Client) submitPostRequest(url string, values *url.Values) ([]Post, error) {
-	postmap := &MultiPostResponse{}
+	postmap := &multiPostResponse{}
 	err := c.submitJsonRequest(url, values, postmap)
 	if err != nil {
 		return nil, err
@@ -69,7 +66,7 @@ func (c *Client) submitPostRequest(url string, values *url.Values) ([]Post, erro
 }
 
 func (c *Client) submitShowPostRequest(url string, values *url.Values) (Post, error) {
-	postmap := &SinglePostResponse{}
+	postmap := &singlePostResponse{}
 	err := c.submitJsonRequest(url, values, postmap)
 	if err != nil {
 		return Post{}, err

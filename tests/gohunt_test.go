@@ -35,6 +35,12 @@ func checkArray(t *testing.T, length int ) {
 	}
 }
 
+func TestGetPost(t *testing.T) {
+	initClient(t)
+	_, err := client.GetPost(20)
+	checkErr(t, err)
+}
+
 func TestGetPosts(t *testing.T) {
 	initClient(t)
 	posts, err := client.GetPosts()
