@@ -20,6 +20,10 @@ type request struct {
 }
 
 func (r request) getResponse() (*bytes.Buffer, error) {
+	return r.getAuthResponse("")
+}
+
+func (r request) getAuthResponse(tok string) (*bytes.Buffer, error) {
 
 	// Determine the HTTP action.
 	var action, finalurl string
@@ -40,6 +44,9 @@ func (r request) getResponse() (*bytes.Buffer, error) {
 		req.AddCookie(r.cookie)
 	}
 	req.Header.Set("User-Agent", r.useragent)
+	if tok != "" {
+		req.Header.Set("Authorization", tok)
+	}
 
 	// Handle the request
 	resp, err := http.DefaultClient.Do(req)
