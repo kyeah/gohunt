@@ -20,15 +20,27 @@ type PostResponse struct {
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
-	return c.GetPreviousPosts(0)
+	return c.submitPostRequest(nil)
 }
 
 func (c *Client) GetPreviousPosts(daysAgo int) ([]Post, error) {
+	values := &url.Values{
+		"days_ago": { strconv.Itoa(daysAgo) },
+	}
+	return c.submitPostRequest(values)
+}
+
+func (c *Client) GetPostsOnDay(day string) ([]Post, error) {
+	values := &url.Values{
+		"day": { day },
+	}
+	return c.submitPostRequest(values)
+}
+
+func (c *Client) submitPostRequest(values *url.Values) ([]Post, error) {
 	req := &Request{
 		url: postUrl,
-		values: &url.Values{
-			"days_ago": { strconv.Itoa(daysAgo) },
-		},
+		values: values,
 	}
 
 	response, err := c.sendRequest(req)
