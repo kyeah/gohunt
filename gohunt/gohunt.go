@@ -6,6 +6,8 @@ package gohunt
 
 import (
 	"encoding/json"
+	"net/url"
+	"strconv"
 )
 
 var (
@@ -18,8 +20,15 @@ type PostResponse struct {
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
+	return c.GetPreviousPosts(0)
+}
+
+func (c *Client) GetPreviousPosts(daysAgo int) ([]Post, error) {
 	req := &Request{
 		url: postUrl,
+		values: &url.Values{
+			"days_ago": { strconv.Itoa(daysAgo) },
+		},
 	}
 
 	response, err := c.sendRequest(req)

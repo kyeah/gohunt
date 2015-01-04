@@ -52,7 +52,7 @@ func RequestUserOAuthCode(clientID string, redirectUrl string, state string) err
 	reqUrl := config.AuthCodeURL(state, oauth2.AccessTypeOnline)
 	req := Request{
 		url: reqUrl,
-		values: &url.Values{},
+		action: "POST",
 	}
 
 	_, err := req.getResponse()
@@ -100,6 +100,7 @@ func NewOAuthClient(clientID string, clientSecret string) (*Client, error) {
 		tokenURL = base + "/v1/oauth/token"
 		req = Request{
 			url: tokenURL,
+			action: "POST",
 			values: &url.Values{
 				"grant_type": { "client_credentials" },
 				"client_id": { clientID },

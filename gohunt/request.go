@@ -14,6 +14,7 @@ import (
 
 type Request struct {
 	url        string
+	action     string
 	values     *url.Values
 	cookie     *http.Cookie
 	useragent  string
@@ -27,11 +28,14 @@ func (r Request) getAuthResponse(auth string) (*bytes.Buffer, error) {
 
 	// Determine the HTTP action.
 	var action, finalurl string
-	if r.values == nil {
+	if r.action == "" {
 		action = "GET"
+	} else {
+		action = r.action
+	}
+	if r.values == nil {
 		finalurl = r.url
 	} else {
-		action = "POST"
 		finalurl = r.url + "?" + r.values.Encode()
 	}
 

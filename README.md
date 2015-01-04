@@ -16,7 +16,7 @@ client, err := gohunt.NewOAuthClient(clientID, clientSecret)
 
 2. User-Authentication by Developer Token
 ```go
-client, err := gohunt.NewUserClient(phToken)
+client := gohunt.NewUserClient(phToken)
 ```
 
 3. User-Authentication by OAuth2

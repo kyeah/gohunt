@@ -17,7 +17,8 @@ func initClient(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-	}	
+		t.Log("Generated Client")
+	}
 }
 
 func checkErr(t *testing.T, err error) {
