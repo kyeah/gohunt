@@ -31,3 +31,12 @@ func HandleRedirect(data) {
 ```
 
 ### Client Interface
+
+```go
+// Posts
+client.GetPost(id int)
+client.GetPosts()
+client.GetPreviousPosts(daysAgo int)
+client.GetPostsOnDay(day string)  // Formatted YYYY-MM-DD
+client.GetAllPosts(searchUrl string, olderThanID int, newerThanID int, count int)  // optional params; Use "" or -1 to exclude
+```
