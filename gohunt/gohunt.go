@@ -12,13 +12,15 @@ import (
 )
 
 var (
-	base        = "https://api.producthunt.com"
-	postUrl     = base + "/v1/posts"
-	userUrl     = base + "/v1/users"
-	notifUrl    = base + "/v1/notifications"
-	postAllUrl  = postUrl + "/all"
-	postVoteUrl = postUrl + "/%s/votes"
-	userVoteUrl = userUrl + "/%s/votes"
+	base           = "https://api.producthunt.com"
+	postUrl        = base + "/v1/posts"
+	userUrl        = base + "/v1/users"
+	notifUrl       = base + "/v1/notifications"
+	postAllUrl     = postUrl + "/all"
+	postVoteUrl    = postUrl + "/%s/votes"
+	userVoteUrl    = userUrl + "/%s/votes"
+	postCommentUrl = postUrl + "/%s/comments"
+	userCommentUrl = userUrl + "/%s/comments"
 )
 
 type singlePostResponse struct {
@@ -43,6 +45,10 @@ type notificationResponse struct {
 
 type voteResponse struct {
 	Votes []Vote `json:"votes"`
+}
+
+type commentResponse struct {
+	Comments []Comment `json:"comments"`
 }
 
 // Post Routes
@@ -163,6 +169,41 @@ func (c *Client) submitVoteRequest(url string, values *url.Values) ([]Vote, erro
 		return nil, err
 	}
 	return votemap.Votes, nil
+}
+
+
+// Comment Routes
+func (c *Client) GetPostComments(postID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(postID)
+	return c.submitCommentRequest(fmt.Sprintf(postCommentUrl, id), values)
+}
+
+
+func (c *Client) GetUserComments(userID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(userID)
+	return c.submitCommentRequest(fmt.Sprintf(userCommentUrl, id), values)
+}
+
+
+func (c *Client) submitCommentRequest(url string, values *url.Values) ([]Comment, error) {
+	commentmap := &commentResponse{}
+	err := c.submitJsonRequest(url, values, commentmap)
+	if err != nil {
+		return nil, err
+	}
+	return commentmap.Comments, nil
 }
 
 

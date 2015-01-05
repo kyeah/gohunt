@@ -73,8 +73,12 @@ func TestGetAllPosts(t *testing.T) {
 // User Routes
 func TestGetUser(t *testing.T) {
 	initClient(t)
-	_, err := client.GetUser("kyeahokay")
+	user, err := client.GetUser("kyeahokay")
 	checkErr(t, err)
+	if user.ID != 129969 {
+		t.Log("Failed to get correct user.")
+		t.Fail()
+	}
 }
 
 func TestGetAllUsers(t *testing.T) {
@@ -83,6 +87,7 @@ func TestGetAllUsers(t *testing.T) {
 	checkErr(t, err)
 	checkArray(t, len(users))
 }
+
 
 // Vote Routes
 func TestGetPostVotes(t *testing.T) {
@@ -95,6 +100,22 @@ func TestGetPostVotes(t *testing.T) {
 func TestGetUserVotes(t *testing.T) {
 	initClient(t)
 	users, err := client.GetUserVotes(100, 500, 1000, 100, "asc")
+	checkErr(t, err)
+	checkArray(t, len(users))
+}
+
+
+// Vote Routes
+func TestGetPostComments(t *testing.T) {
+	initClient(t)
+	posts, err := client.GetPostComments(12855, 500, 1000, 100, "asc")
+	checkErr(t, err)
+	checkArray(t, len(posts))
+}
+
+func TestGetUserComments(t *testing.T) {
+	initClient(t)
+	users, err := client.GetUserComments(51555, 500, 1000, 100, "asc")
 	checkErr(t, err)
 	checkArray(t, len(users))
 }
