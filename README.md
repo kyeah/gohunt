@@ -19,13 +19,13 @@ import (
 func main() {
 	client := gohunt.NewUserClient("devToken")
 
-        // Grab today's posts
+	// Grab today's posts
 	posts, err := client.GetPosts()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-        // Print all attributes with field names
+	// Print all attributes with field names
 	fmt.Printf("%+v\n", posts[0])
 }
 ```
