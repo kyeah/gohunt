@@ -51,6 +51,10 @@ client.GetAllUsers([olderThanID int], [newerThanID int], [count int], [order str
 client.GetPostVotes(postID int, [olderThanID int], [newerThanID int], [count int], [order string])
 client.GetUserVotes(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
 
+// Comments
+client.GetPostComments(postID int, [olderThanID int], [newerThanID int], [count int], [order string])
+client.GetUserComments(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
+
 // Notifications
 client.GetNotifications([olderThanID int], [newerThanID int], [count int], [order string])
 ```
