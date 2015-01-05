@@ -145,6 +145,14 @@ func TestGetFollowing(t *testing.T) {
 }
 
 
+// Related Links Route
+func TestGetRelatedLinks(t *testing.T) {
+	initClient(t)
+	_, err := client.GetRelatedLinks("")
+	checkErr(t, err)
+}
+
+
 // Settings Route
 func TestGetSettings(t *testing.T) {
 	initClient(t)

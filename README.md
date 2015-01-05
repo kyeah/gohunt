@@ -59,6 +59,9 @@ client.GetUserComments(userID int, [olderThanID int], [newerThanID int], [count 
 client.GetFollowers(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
 client.GetFollowing(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
 
+// Related Links
+client.GetRelatedLinks([searchUrl string])
+
 // Requires User-Authenticated Client
 client.GetNotifications([olderThanID int], [newerThanID int], [count int], [order string])
 client.GetSettings()

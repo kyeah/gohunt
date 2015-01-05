@@ -16,6 +16,7 @@ var (
 	postUrl        = base + "/v1/posts"
 	userUrl        = base + "/v1/users"
 	notifUrl       = base + "/v1/notifications"
+	relLinkUrl     = base + "/v1/related_links"
 	settingsUrl    = base + "/v1/me"
 	postAllUrl     = postUrl + "/all"
 	postVoteUrl    = postUrl + "/%s/votes"
@@ -69,6 +70,10 @@ type followingResponse struct {
 
 type settingsResponse struct {
 	Settings UserSettings `json:"user"`
+}
+
+type relatedLinkResponse struct {
+	Links []RelatedLink `json:"related_links"`
 }
 
 
@@ -300,6 +305,20 @@ func (c *Client) submitFollowingRequest(url string, values *url.Values) ([]User,
 		users[i] = usermap.Data[i].User
 	}
 	return users, nil
+}
+
+
+// Related Links Route
+func (c *Client) GetRelatedLinks(searchUrl string) ([]RelatedLink, error) {
+	values := &url.Values{}
+	if searchUrl != ""  { values.Add("search[url]", searchUrl) }
+	
+	linkmap := &relatedLinkResponse{}
+	err := c.submitJsonRequest(relLinkUrl, values, linkmap)
+	if err != nil {
+		return nil, err
+	}
+	return linkmap.Links, nil
 }
 
 
