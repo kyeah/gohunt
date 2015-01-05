@@ -143,3 +143,11 @@ func TestGetFollowing(t *testing.T) {
 	checkErr(t, err)
 	checkArray(t, len(users))
 }
+
+
+// Settings Route
+func TestGetSettings(t *testing.T) {
+	initClient(t)
+	_, err := client.GetSettings()
+	checkErr(t, err)
+}

@@ -55,6 +55,11 @@ client.GetUserVotes(userID int, [olderThanID int], [newerThanID int], [count int
 client.GetPostComments(postID int, [olderThanID int], [newerThanID int], [count int], [order string])
 client.GetUserComments(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
 
-// Notifications
+// Followers and Following
+client.GetFollowers(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
+client.GetFollowing(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
+
+// Requires User-Authenticated Client
 client.GetNotifications([olderThanID int], [newerThanID int], [count int], [order string])
+client.GetSettings()
 ```

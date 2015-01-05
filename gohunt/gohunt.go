@@ -16,6 +16,7 @@ var (
 	postUrl        = base + "/v1/posts"
 	userUrl        = base + "/v1/users"
 	notifUrl       = base + "/v1/notifications"
+	settingsUrl    = base + "/v1/me"
 	postAllUrl     = postUrl + "/all"
 	postVoteUrl    = postUrl + "/%s/votes"
 	userVoteUrl    = userUrl + "/%s/votes"
@@ -65,6 +66,11 @@ type followersResponse struct {
 type followingResponse struct {
 	Data []followInnerData `json:"following"`
 }
+
+type settingsResponse struct {
+	Settings UserSettings `json:"user"`
+}
+
 
 // Post Routes
 func (c *Client) GetPost(id int) (Post, error) {
@@ -294,6 +300,17 @@ func (c *Client) submitFollowingRequest(url string, values *url.Values) ([]User,
 		users[i] = usermap.Data[i].User
 	}
 	return users, nil
+}
+
+
+// Settings Route
+func (c *Client) GetSettings() (UserSettings, error) {
+	setmap := &settingsResponse{}
+	err := c.submitJsonRequest(settingsUrl, nil, setmap)
+	if err != nil {
+		return UserSettings{}, err
+	}
+	return setmap.Settings, nil
 }
 
 
