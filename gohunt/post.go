@@ -30,6 +30,6 @@ type currentUser struct {
 	Commented      bool  `json:"commented_on_post"`
 }
 
-func (p Post) String() string {
+func (p Post) Summary() string {
 	return fmt.Sprintf("post[%s: %s]", p.Name, p.Tagline)
 }

@@ -19,6 +19,6 @@ type Notification struct {
 	ToUser     User         `json:"to_user"`
 }
 
-func (n Notification) String() string {
+func (n Notification) Summary() string {
 	return fmt.Sprintf("notif[%s]", n.FullBody)
 }

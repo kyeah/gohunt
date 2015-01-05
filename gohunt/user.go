@@ -19,6 +19,6 @@ type User struct {
 	WebsiteUrl  string             `json:"website_url"`
 }
 
-func (u User) String() string {
+func (u User) Summary() string {
 	return fmt.Sprintf("user[%s: %s]", u.Name, u.Headline)
 }

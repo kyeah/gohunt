@@ -15,6 +15,6 @@ type Vote struct {
 	User           User    `json:"user"`
 }
 
-func (v Vote) String() string {
+func (v Vote) Summary() string {
 	return fmt.Sprintf("vote[post %s: user %s]", v.PostID, v.User.Name)
 }
