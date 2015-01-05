@@ -127,3 +127,19 @@ func TestGetNotifications(t *testing.T) {
 	_, err := client.GetNotifications(500, 1000, -1, "desc")
 	checkErr(t, err)
 }
+
+
+// Follow Routes
+func TestGetFollowers(t *testing.T) {
+	initClient(t)
+	users, err := client.GetFollowers(8660, -1, -1, -1, "asc")
+	checkErr(t, err)
+	checkArray(t, len(users))
+}
+
+func TestGetFollowing(t *testing.T) {
+	initClient(t)
+	users, err := client.GetFollowing(51555, 500, 1000, 100, "asc")
+	checkErr(t, err)
+	checkArray(t, len(users))
+}

@@ -21,6 +21,8 @@ var (
 	userVoteUrl    = userUrl + "/%s/votes"
 	postCommentUrl = postUrl + "/%s/comments"
 	userCommentUrl = userUrl + "/%s/comments"
+	followerUrl    = userUrl + "/%s/followers"
+	followingUrl   = userUrl + "/%s/following"
 )
 
 type singlePostResponse struct {
@@ -49,6 +51,19 @@ type voteResponse struct {
 
 type commentResponse struct {
 	Comments []Comment `json:"comments"`
+}
+
+type followInnerData struct {
+	ID   int `json:"id"`
+	User User `json:"user"`
+}
+
+type followersResponse struct {
+	Data []followInnerData `json:"followers"`
+}
+
+type followingResponse struct {
+	Data []followInnerData `json:"following"`
 }
 
 // Post Routes
@@ -227,6 +242,61 @@ func (c *Client) submitNotificationRequest(url string, values *url.Values) ([]No
 	return notifmap.Notifs, nil
 }
 
+
+// Follow Routes
+func (c *Client) GetFollowers(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(userID)
+	return c.submitFollowersRequest(fmt.Sprintf(followerUrl, id), values)
+}
+
+func (c *Client) GetFollowing(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(userID)
+	return c.submitFollowingRequest(fmt.Sprintf(followingUrl, id), values)
+}
+
+func (c *Client) submitFollowersRequest(url string, values *url.Values) ([]User, error) {
+	usermap := &followersResponse{}
+	err := c.submitJsonRequest(url, values, usermap)
+	if err != nil {
+		return nil, err
+	}
+	
+	users := make([]User, len(usermap.Data))
+	
+	for i := 0; i < len(usermap.Data); i++ {
+		users[i] = usermap.Data[i].User
+	}
+	return users, nil
+}
+
+func (c *Client) submitFollowingRequest(url string, values *url.Values) ([]User, error) {
+	usermap := &followingResponse{}
+	err := c.submitJsonRequest(url, values, usermap)
+	if err != nil {
+		return nil, err
+	}
+	
+	users := make([]User, len(usermap.Data))
+	
+	for i := 0; i < len(usermap.Data); i++ {
+		users[i] = usermap.Data[i].User
+	}
+	return users, nil
+}
+
+
 // Get a JSON Response using an arbitrary JSON template
 func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct interface{}) error {
 	req := &Request{
@@ -238,6 +308,6 @@ func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct in
 	if err != nil {
 		return err
 	}
-	
+
 	return json.NewDecoder(response).Decode(jsonStruct)
 }
