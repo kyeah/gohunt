@@ -9,13 +9,9 @@ var client *gohunt.Client
 
 func initClient(t *testing.T) {
 	if client == nil {
-		var err error
 		client = gohunt.NewUserClient(
 			"devToken",
 		)
-		if err != nil {
-			t.Fatal(err)
-		}
 		t.Log("Generated Client")
 	}
 }

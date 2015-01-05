@@ -5,6 +5,31 @@ A golang client library for the official Product Hunt API.
 
 ## Usage
 
+Download and install gohunt by running `go get github.com/kyeah/gohunt/gohunt`.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"github.com/kyeah/gohunt/gohunt"
+)
+
+func main() {
+	client := gohunt.NewUserClient("devToken")
+
+        // Grab today's posts
+	posts, err := client.GetPosts()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+        // Print all attributes with field names
+	fmt.Printf("%+v\n", posts[0])
+}
+```
+
 ### Gohunt Client
 
 Interaction with the Product Hunt API is facilitated by the Gohunt Client. The client can be generated in three ways:
