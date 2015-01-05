@@ -25,8 +25,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print all attributes with field names
-	fmt.Printf("%+v\n", posts[0])
+        // Print post summaries (Title: headline)
+	for _, post := range posts {
+		fmt.Println(post.Summary())
+	}
 }
 ```
 
