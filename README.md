@@ -33,11 +33,24 @@ func HandleRedirect(data) {
 
 ### Client Interface
 
+`[param]` indicates an optional parameter; use "" or -1 to exclude them in the request.
+
 ```go
 // Posts
 client.GetPost(id int)
 client.GetPosts()
 client.GetPreviousPosts(daysAgo int)
 client.GetPostsOnDay(day string) // Formatted YYYY-MM-DD
-client.GetAllPosts(searchUrl string, olderThanID int, newerThanID int, count int) // optional params; Use "" or -1 to exclude
+client.GetAllPosts([searchUrl string], [olderThanID int], [newerThanID int], [count int])
+
+// Users
+client.GetUser(username string)  // id or username
+client.GetAllUsers([olderThanID int], [newerThanID int], [count int], [order string])  // order is "asc" or "desc"
+
+// Votes
+client.GetPostVotes(postID int, [olderThanID int], [newerThanID int], [count int], [order string])
+client.GetUserVotes(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
+
+// Notifications
+client.GetNotifications([olderThanID int], [newerThanID int], [count int], [order string])
 ```

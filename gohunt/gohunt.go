@@ -6,6 +6,7 @@ package gohunt
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"strconv"
 )
@@ -13,7 +14,11 @@ import (
 var (
 	base        = "https://api.producthunt.com"
 	postUrl     = base + "/v1/posts"
+	userUrl     = base + "/v1/users"
+	notifUrl    = base + "/v1/notifications"
 	postAllUrl  = postUrl + "/all"
+	postVoteUrl = postUrl + "/%s/votes"
+	userVoteUrl = userUrl + "/%s/votes"
 )
 
 type singlePostResponse struct {
@@ -24,8 +29,25 @@ type multiPostResponse struct {
 	Posts []Post `json:"posts"`
 }
 
+type singleUserResponse struct {
+	User User `json:"user"`
+}
+
+type multiUserResponse struct {
+	Users []User `json:"users"`
+}
+
+type notificationResponse struct {
+	Notifs []Notification `json:"notifications"`
+}
+
+type voteResponse struct {
+	Votes []Vote `json:"votes"`
+}
+
+// Post Routes
 func (c *Client) GetPost(id int) (Post, error) {
-	return c.submitShowPostRequest(postUrl + "/" + strconv.Itoa(id), nil)
+	return c.submitShowPostRequest(postUrl + "/" + strconv.Itoa(id))
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
@@ -65,13 +87,103 @@ func (c *Client) submitPostRequest(url string, values *url.Values) ([]Post, erro
 	return postmap.Posts, nil
 }
 
-func (c *Client) submitShowPostRequest(url string, values *url.Values) (Post, error) {
+func (c *Client) submitShowPostRequest(url string) (Post, error) {
 	postmap := &singlePostResponse{}
-	err := c.submitJsonRequest(url, values, postmap)
+	err := c.submitJsonRequest(url, nil, postmap)
 	if err != nil {
 		return Post{}, err
 	}
 	return postmap.Post, nil
+}
+
+
+// User Routes
+func (c *Client) GetUser(username string) (User, error) {
+	return c.submitShowUserRequest(userUrl + "/" + username)
+}
+
+func (c *Client) GetAllUsers(olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	return c.submitUserRequest(userUrl, values)
+}
+
+func (c *Client) submitUserRequest(url string, values *url.Values) ([]User, error) {
+	usermap := &multiUserResponse{}
+	err := c.submitJsonRequest(url, values, usermap)
+	if err != nil {
+		return nil, err
+	}
+	return usermap.Users, nil
+}
+
+func (c *Client) submitShowUserRequest(url string) (User, error) {
+	usermap := &singleUserResponse{}
+	err := c.submitJsonRequest(url, nil, usermap)
+	if err != nil {
+		return User{}, err
+	}
+	return usermap.User, nil
+}
+
+
+// Vote Routes
+func (c *Client) GetPostVotes(postID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(postID)
+	return c.submitVoteRequest(fmt.Sprintf(postVoteUrl, id), values)
+}
+
+
+func (c *Client) GetUserVotes(userID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	id := strconv.Itoa(userID)
+	return c.submitVoteRequest(fmt.Sprintf(userVoteUrl, id), values)
+}
+
+
+func (c *Client) submitVoteRequest(url string, values *url.Values) ([]Vote, error) {
+	votemap := &voteResponse{}
+	err := c.submitJsonRequest(url, values, votemap)
+	if err != nil {
+		return nil, err
+	}
+	return votemap.Votes, nil
+}
+
+
+// Notification Routes
+func (c *Client) GetNotifications(olderThanID int, newerThanID int, count int, order string) ([]Notification, error) {	
+	values := &url.Values{}
+	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
+	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
+	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
+	if order != ""      { values.Add("order", order)                     }
+
+	return c.submitNotificationRequest(notifUrl, values)
+}
+
+func (c *Client) submitNotificationRequest(url string, values *url.Values) ([]Notification, error) {
+	notifmap := &notificationResponse{}
+	err := c.submitJsonRequest(url, values, notifmap)
+	if err != nil {
+		return nil, err
+	}
+	return notifmap.Notifs, nil
 }
 
 // Get a JSON Response using an arbitrary JSON template

@@ -10,9 +10,8 @@ var client *gohunt.Client
 func initClient(t *testing.T) {
 	if client == nil {
 		var err error
-		client, err = gohunt.NewOAuthClient(
-			"clientId",
-			"clientSecret",
+		client = gohunt.NewUserClient(
+			"devToken",
 		)
 		if err != nil {
 			t.Fatal(err)
@@ -35,6 +34,7 @@ func checkArray(t *testing.T, length int ) {
 	}
 }
 
+// Post Routes
 func TestGetPost(t *testing.T) {
 	initClient(t)
 	_, err := client.GetPost(20)
@@ -67,4 +67,42 @@ func TestGetAllPosts(t *testing.T) {
 	posts, err := client.GetAllPosts("", 500, 1000, 3)
 	checkErr(t, err)
 	checkArray(t, len(posts))
+}
+
+
+// User Routes
+func TestGetUser(t *testing.T) {
+	initClient(t)
+	_, err := client.GetUser("kyeahokay")
+	checkErr(t, err)
+}
+
+func TestGetAllUsers(t *testing.T) {
+	initClient(t)
+	users, err := client.GetAllUsers(500, 1000, 50, "asc")
+	checkErr(t, err)
+	checkArray(t, len(users))
+}
+
+// Vote Routes
+func TestGetPostVotes(t *testing.T) {
+	initClient(t)
+	posts, err := client.GetPostVotes(10, 500, 1000, 100, "asc")
+	checkErr(t, err)
+	checkArray(t, len(posts))
+}
+
+func TestGetUserVotes(t *testing.T) {
+	initClient(t)
+	users, err := client.GetUserVotes(100, 500, 1000, 100, "asc")
+	checkErr(t, err)
+	checkArray(t, len(users))
+}
+
+
+// Notification Routes
+func TestGetNotifications(t *testing.T) {
+	initClient(t)
+	_, err := client.GetNotifications(500, 1000, -1, "desc")
+	checkErr(t, err)
 }
