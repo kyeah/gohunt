@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-        // Print post summaries (Title: headline)
+	// Print post summaries (Title: headline)
 	for _, post := range posts {
 		fmt.Println(post.Summary())
 	}
