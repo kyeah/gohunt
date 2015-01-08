@@ -18,6 +18,7 @@ var (
 	userUrl        = base + "/v1/users"
 	notifUrl       = base + "/v1/notifications"
 	relLinkUrl     = base + "/v1/related_links"
+	commentUrl     = base + "/v1/comments"
 	settingsUrl    = base + "/v1/me"
 	postAllUrl     = postUrl + "/all"
 	postVoteUrl    = postUrl + "/%s/votes"
@@ -265,6 +266,29 @@ func (c *Client) GetUserComments(userID int, olderThanID int, newerThanID int, c
 	return c.submitCommentRequest(fmt.Sprintf(userCommentUrl, id), values)
 }
 
+func (c *Client) CreateComment(postID int, parentCommentID int, body string) (Comment, error) {
+	values := &url.Values{
+		"action": { "POST" },
+		"body": { body },
+	}
+	if parentCommentID != -1 { 
+		values.Add("parent_comment_id", strconv.Itoa(parentCommentID))
+	}
+	id := strconv.Itoa(postID)
+	return c.submitSingleCommentRequest(fmt.Sprint(postCommentUrl, id), values)
+}
+
+func (c *Client) UpdateComment(commentID int, parentCommentID int, body string) (Comment, error) {
+	values := &url.Values{
+		"action": { "PUT" },
+		"body": { body },
+	}
+	if parentCommentID != -1 { 
+		values.Add("parent_comment_id", strconv.Itoa(parentCommentID))
+	}
+	id := strconv.Itoa(commentID)
+	return c.submitSingleCommentRequest(commentUrl + "/" + id, values)
+}
 
 func (c *Client) submitCommentRequest(url string, values *url.Values) ([]Comment, error) {
 	commentmap := &commentResponse{}
@@ -273,6 +297,15 @@ func (c *Client) submitCommentRequest(url string, values *url.Values) ([]Comment
 		return nil, err
 	}
 	return commentmap.Comments, nil
+}
+
+func (c *Client) submitSingleCommentRequest(url string, values *url.Values) (Comment, error) {
+	commentmap := &singleCommentResponse{}
+	err := c.submitJsonRequest(url, values, commentmap)
+	if err != nil {
+		return Comment{}, err
+	}
+	return commentmap.Comment, nil
 }
 
 
@@ -284,6 +317,13 @@ func (c *Client) GetNotifications(olderThanID int, newerThanID int, count int, o
 	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
 	if order != ""      { values.Add("order", order)                     }
 
+	return c.submitNotificationRequest(notifUrl, values)
+}
+
+func (c *Client) ClearNotifications() ([]Notification, error) {
+	values := &url.Values {
+		"action": { "DELETE" },
+	}
 	return c.submitNotificationRequest(notifUrl, values)
 }
 
@@ -388,7 +428,7 @@ func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct in
 		errorstruct := &errorResponse{}
 		err = json.NewDecoder(response).Decode(errorstruct)
 		if err == nil {
-			err = errors.New(errorstruct.Error + ": " + errorstruct.Description)
+			err = errors.New(fmt.Sprintf("[%s] %s", errorstruct.Error, errorstruct.Description))
 		}
 		return err
 	}
