@@ -102,8 +102,8 @@ client.GetSettings()
 
 ### Missing Requests
 
-[Settings#Update](https://api.producthunt.com/v1/docs/settings/settings_update_update_your_details)
-[RelatedLinks#Create/Update/Destroy](https://api.producthunt.com/v1/docs/related_links/related_links_create_create_a_related_link)
-[Suggestions#Create](https://api.producthunt.com/v1/docs/suggestions/suggestions_create_create_a_suggestion)
+* [Settings#Update](https://api.producthunt.com/v1/docs/settings/settings_update_update_your_details)
+* [RelatedLinks#Create/Update/Destroy](https://api.producthunt.com/v1/docs/related_links/related_links_create_create_a_related_link)
+* [Suggestions#Create](https://api.producthunt.com/v1/docs/suggestions/suggestions_create_create_a_suggestion)
 
-* Note: Write Access is provided by the Product Hunt team to specific entities, and rarely to third parties. All write-access requests are currently untested.
+Note: Write Access is provided by the Product Hunt team to specific entities, and rarely to third parties. All write-access requests are currently untested.
