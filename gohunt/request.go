@@ -59,13 +59,12 @@ func (r Request) getAuthResponse(auth string) (*bytes.Buffer, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(resp.Status)
+		err = errors.New(resp.Status)
 	}
 
-	respbytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	respbytes, newerr := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		err = newerr
 	}
-
-	return bytes.NewBuffer(respbytes), nil
+	return bytes.NewBuffer(respbytes), err
 }

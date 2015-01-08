@@ -6,6 +6,7 @@ package gohunt
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -47,8 +48,16 @@ type notificationResponse struct {
 	Notifs []Notification `json:"notifications"`
 }
 
+type singleVoteResponse struct {
+	Vote Vote `json:"vote"`
+}
+
 type voteResponse struct {
 	Votes []Vote `json:"votes"`
+}
+
+type singleCommentResponse struct {
+	Comment Comment `json:"comment"`
 }
 
 type commentResponse struct {
@@ -76,10 +85,14 @@ type relatedLinkResponse struct {
 	Links []RelatedLink `json:"related_links"`
 }
 
+type errorResponse struct {
+	Error       string
+	Description string
+}
 
 // Post Routes
 func (c *Client) GetPost(id int) (Post, error) {
-	return c.submitShowPostRequest(postUrl + "/" + strconv.Itoa(id))
+	return c.submitSinglePostRequest(postUrl + "/" + strconv.Itoa(id), nil)
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
@@ -106,8 +119,18 @@ func (c *Client) GetAllPosts(searchUrl string, olderThanID int, newerThanID int,
 	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
 	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
 	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-
+	
 	return c.submitPostRequest(postAllUrl, values)
+}
+
+func (c *Client) CreatePost(link string, name string, tagline string) (Post, error) {
+	values := &url.Values{
+		"action": { "POST" },
+		"url": { link },
+		"name": { name },
+		"tagline": { tagline },
+	}
+	return c.submitSinglePostRequest(postUrl, values)
 }
 
 func (c *Client) submitPostRequest(url string, values *url.Values) ([]Post, error) {
@@ -119,7 +142,7 @@ func (c *Client) submitPostRequest(url string, values *url.Values) ([]Post, erro
 	return postmap.Posts, nil
 }
 
-func (c *Client) submitShowPostRequest(url string) (Post, error) {
+func (c *Client) submitSinglePostRequest(url string, values *url.Values) (Post, error) {
 	postmap := &singlePostResponse{}
 	err := c.submitJsonRequest(url, nil, postmap)
 	if err != nil {
@@ -187,6 +210,26 @@ func (c *Client) GetUserVotes(userID int, olderThanID int, newerThanID int, coun
 	return c.submitVoteRequest(fmt.Sprintf(userVoteUrl, id), values)
 }
 
+func (c *Client) VoteForPost(postID int, voting bool) (Vote, error) {
+	var action string
+	if voting {
+		action = "POST"
+	} else {
+		action = "DELETE"
+	}
+	values := &url.Values{ 
+		"action": { action },
+		"post_id": { strconv.Itoa(postID) },
+	}
+
+	id := strconv.Itoa(postID)
+	votemap := &singleVoteResponse{}
+	err := c.submitJsonRequest(fmt.Sprintf(postVoteUrl, id), values, votemap)
+	if err != nil {
+		return Vote{}, err
+	}
+	return votemap.Vote, nil
+}
 
 func (c *Client) submitVoteRequest(url string, values *url.Values) ([]Vote, error) {
 	votemap := &voteResponse{}
@@ -342,8 +385,14 @@ func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct in
 	
 	response, err := c.sendRequest(req)
 	if err != nil {
+		errorstruct := &errorResponse{}
+		err = json.NewDecoder(response).Decode(errorstruct)
+		if err == nil {
+			err = errors.New(errorstruct.Error + ": " + errorstruct.Description)
+		}
 		return err
 	}
 
-	return json.NewDecoder(response).Decode(jsonStruct)
+	err = json.NewDecoder(response).Decode(jsonStruct)
+	return err
 }
