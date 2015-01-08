@@ -25,6 +25,7 @@ var (
 	userVoteUrl    = userUrl + "/%s/votes"
 	postCommentUrl = postUrl + "/%s/comments"
 	userCommentUrl = userUrl + "/%s/comments"
+	followUrl      = userUrl + "/%s/follow"
 	followerUrl    = userUrl + "/%s/followers"
 	followingUrl   = userUrl + "/%s/following"
 )
@@ -72,6 +73,10 @@ type followInnerData struct {
 
 type followersResponse struct {
 	Data []followInnerData `json:"followers"`
+}
+
+type singleFollowerResponse struct {
+	Data followInnerData `json:"follower"`
 }
 
 type followingResponse struct {
@@ -358,6 +363,26 @@ func (c *Client) GetFollowing(userID int, olderThanID int, newerThanID int, coun
 
 	id := strconv.Itoa(userID)
 	return c.submitFollowingRequest(fmt.Sprintf(followingUrl, id), values)
+}
+
+func (c *Client) Follow(userID int, following bool) (User, error) {
+	var action string
+	if following {
+		action = "POST"
+	} else {
+		action = "DELETE"
+	}
+	values := &url.Values{
+		"action": { action },
+	}
+
+	id := strconv.Itoa(userID)
+	usermap := &singleFollowerResponse{}
+	err := c.submitJsonRequest(fmt.Sprintf(followUrl, id), values, usermap)
+	if err != nil {
+		return User{}, err
+	}
+	return usermap.Data.User, nil
 }
 
 func (c *Client) submitFollowersRequest(url string, values *url.Values) ([]User, error) {
