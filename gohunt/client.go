@@ -7,6 +7,7 @@ package gohunt
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
 	"net/url"
 	"golang.org/x/oauth2"
 )
@@ -34,7 +35,7 @@ func NewUserClient(accessToken string) *Client {
 }
 
 // Request Access Grant Code and send to redirectUrl
-func RequestUserOAuthCode(clientID string, redirectUrl string, state string) error {
+func RequestUserOAuthCode(w http.ResponseWriter, r *http.Request, clientID string, redirectUrl string, state string) {
 	var (
 		host = "api.producthunt.com"
 		base = "https://" + host
@@ -50,16 +51,7 @@ func RequestUserOAuthCode(clientID string, redirectUrl string, state string) err
 	)
 
 	reqUrl := config.AuthCodeURL(state, oauth2.AccessTypeOnline)
-	req := Request{
-		url: reqUrl,
-		action: "POST",
-	}
-
-	_, err := req.getResponse()
-	if err != nil {
-		return err
-	}
-	return nil
+	http.Redirect(w, r, reqUrl, http.StatusFound)
 }
 
 // OAuth2 User-Authenticated Client with Access Grant Code

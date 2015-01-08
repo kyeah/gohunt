@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-var (
+const (
 	base           = "https://api.producthunt.com"
 	postUrl        = base + "/v1/posts"
 	userUrl        = base + "/v1/users"
