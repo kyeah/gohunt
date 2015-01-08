@@ -89,7 +89,7 @@ client.UpdateComment(commentID int, [parentCommentID int], body string)
 // Followers and Following
 client.GetFollowers(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
 client.GetFollowing(userID int, [olderThanID int], [newerThanID int], [count int], [order string])
-client.Follow(userID int, following bool) // following=false i unfollowing; else true
+client.Follow(userID int, following bool) // following=false if unfollowing; else true
 
 // Related Links
 client.GetRelatedLinks([searchUrl string])
