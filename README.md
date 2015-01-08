@@ -50,11 +50,11 @@ client := gohunt.NewUserClient(phToken)
 User-Authentication by OAuth2
 ```go
 func handleLogin(w http.ResponseWriter, r *http.Request) {
-   gohunt.RequestUserOAuthCode(clientID, '/redir', state)
+   gohunt.RequestUserOAuthCode(w, r, clientID, "/redir", state)
 }
 
 func handleRedirect(w http.ResponseWriter, r *http.Request) {
-   client, err := gohunt.NewUserOAuthClient(clientID, clientSecret, '/me', r.FormValue("code"))
+   client, err := gohunt.NewUserOAuthClient(clientID, clientSecret, "/me", r.FormValue("code"))
 }
 
 func main() {
