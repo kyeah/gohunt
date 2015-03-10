@@ -7,28 +7,28 @@ package gohunt
 import (
 	"bytes"
 	"encoding/json"
+	"golang.org/x/oauth2"
 	"net/http"
 	"net/url"
-	"golang.org/x/oauth2"
 )
 
 type Client struct {
-	AuthToken      *Token
-	Authorization  string
+	AuthToken     *Token
+	Authorization string
 }
 
 type Token struct {
-	AccessToken  string   `json:"access_token"`
-	TokenType    string   `json:"token_type"`
-	Expiry       float32  `json:"expires_in"`
-	Scope        string   `json:"scope"`
+	AccessToken string  `json:"access_token"`
+	TokenType   string  `json:"token_type"`
+	Expiry      float32 `json:"expires_in"`
+	Scope       string  `json:"scope"`
 }
 
 // User-Authenticated Client with Developer Token
 func NewUserClient(accessToken string) *Client {
 	tok := &Token{
 		AccessToken: accessToken,
-		TokenType: "bearer",
+		TokenType:   "bearer",
 	}
 
 	return GenAuthClient(tok)
@@ -37,13 +37,13 @@ func NewUserClient(accessToken string) *Client {
 // Request Access Grant Code and send to redirectUrl
 func RequestUserOAuthCode(w http.ResponseWriter, r *http.Request, clientID string, redirectUrl string, state string) {
 	var (
-		host = "api.producthunt.com"
-		base = "https://" + host
-		config = &oauth2.Config {
-			ClientID: clientID,
-			Scopes: []string{ "public", "private" },
+		host   = "api.producthunt.com"
+		base   = "https://" + host
+		config = &oauth2.Config{
+			ClientID:    clientID,
+			Scopes:      []string{"public", "private"},
 			RedirectURL: redirectUrl,
-			Endpoint: oauth2.Endpoint {
+			Endpoint: oauth2.Endpoint{
 				AuthURL:  base + "/v1/oauth/authorize",
 				TokenURL: base + "/v1/oauth/token",
 			},
@@ -57,14 +57,14 @@ func RequestUserOAuthCode(w http.ResponseWriter, r *http.Request, clientID strin
 // OAuth2 User-Authenticated Client with Access Grant Code
 func NewUserOAuthClient(clientID string, clientSecret string, redirectUrl string, code string) (*Client, error) {
 	var (
-		host = "api.producthunt.com"
-		base = "https://" + host
-		config = &oauth2.Config {
-			ClientID: clientID,
+		host   = "api.producthunt.com"
+		base   = "https://" + host
+		config = &oauth2.Config{
+			ClientID:     clientID,
 			ClientSecret: clientSecret,
-			Scopes: []string{ "public", "private" },
-			RedirectURL: redirectUrl,
-			Endpoint: oauth2.Endpoint {
+			Scopes:       []string{"public", "private"},
+			RedirectURL:  redirectUrl,
+			Endpoint: oauth2.Endpoint{
 				AuthURL:  base + "/v1/oauth/authorize",
 				TokenURL: base + "/v1/oauth/token",
 			},
@@ -78,7 +78,7 @@ func NewUserOAuthClient(clientID string, clientSecret string, redirectUrl string
 
 	tok := &Token{
 		AccessToken: otok.AccessToken,
-		TokenType: otok.TokenType,
+		TokenType:   otok.TokenType,
 	}
 
 	return GenAuthClient(tok), nil
@@ -87,16 +87,16 @@ func NewUserOAuthClient(clientID string, clientSecret string, redirectUrl string
 // OAuth2 Client-Only Authentication
 func NewOAuthClient(clientID string, clientSecret string) (*Client, error) {
 	var (
-		host = "api.producthunt.com"
-		base = "https://" + host
+		host     = "api.producthunt.com"
+		base     = "https://" + host
 		tokenURL = base + "/v1/oauth/token"
-		req = Request{
-			url: tokenURL,
+		req      = Request{
+			url:    tokenURL,
 			action: "POST",
 			values: &url.Values{
-				"grant_type": { "client_credentials" },
-				"client_id": { clientID },
-				"client_secret": { clientSecret },
+				"grant_type":    {"client_credentials"},
+				"client_id":     {clientID},
+				"client_secret": {clientSecret},
 			},
 		}
 	)
@@ -121,7 +121,7 @@ func GenAuthClient(tok *Token) *Client {
 	buffer.WriteString(tok.AccessToken)
 
 	return &Client{
-		AuthToken: tok,
+		AuthToken:     tok,
 		Authorization: buffer.String(),
 	}
 }

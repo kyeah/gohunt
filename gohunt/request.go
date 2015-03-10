@@ -13,11 +13,11 @@ import (
 )
 
 type Request struct {
-	url        string
-	action     string
-	values     *url.Values
-	cookie     *http.Cookie
-	useragent  string
+	url       string
+	action    string
+	values    *url.Values
+	cookie    *http.Cookie
+	useragent string
 }
 
 func (r Request) getResponse() (*bytes.Buffer, error) {

@@ -9,10 +9,10 @@ import (
 )
 
 type Vote struct {
-	ID             int     `json:"id"`
-	PostID         int     `json:"post_id"`
-	Created        string  `json:"created_at"`
-	User           User    `json:"user"`
+	ID      int    `json:"id"`
+	PostID  int    `json:"post_id"`
+	Created string `json:"created_at"`
+	User    User   `json:"user"`
 }
 
 func (v Vote) Summary() string {

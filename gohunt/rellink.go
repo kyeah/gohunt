@@ -9,14 +9,14 @@ import (
 )
 
 type RelatedLink struct {
-	ID       int     `json:"id"`
-	Url      string  `json:"url"`
-	Title    string  `json:"title"`
-	Domain   string  `json:"domain"`
-	Favicon  string  `json:"favicon"`   
-	PostID   int     `json:"post_id"`
-	UserID   int     `json:"user_id"`
-	Post     Post    `json:"post"`
+	ID      int    `json:"id"`
+	Url     string `json:"url"`
+	Title   string `json:"title"`
+	Domain  string `json:"domain"`
+	Favicon string `json:"favicon"`
+	PostID  int    `json:"post_id"`
+	UserID  int    `json:"user_id"`
+	Post    Post   `json:"post"`
 }
 
 func (c RelatedLink) Summary() string {
