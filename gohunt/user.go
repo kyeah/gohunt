@@ -9,14 +9,19 @@ import (
 )
 
 type User struct {
-	ID          int                `json:"id"`
-	Name        string             `json:"name"`
-	Username    string             `json:"username"`
-	Headline    string             `json:"headline"`
-	Created     string             `json:"created_at"`
-	Image       map[string]string  `json:"image"`
-	ProfileUrl  string             `json:"profile_url"`
-	WebsiteUrl  string             `json:"website_url"`
+	ID         int               `json:"id"`
+	Name       string            `json:"name"`
+	Username   string            `json:"username"`
+	Headline   string            `json:"headline"`
+	Created    string            `json:"created_at"`
+	ImageUrl   map[string]string `json:"image_url"`
+	ProfileUrl string            `json:"profile_url"`
+	WebsiteUrl string            `json:"website_url"`
+	Votes      []Vote            `json:"votes"`
+	Posts      []Post            `json:"posts"`
+	MakerOf    []Post            `json:"maker_of"`
+	Followers  []User            `json:"followers"`
+	Following  []User            `json:"followings"`
 }
 
 func (u User) Summary() string {
