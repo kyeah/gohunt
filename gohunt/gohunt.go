@@ -67,7 +67,7 @@ type commentResponse struct {
 }
 
 type followInnerData struct {
-	ID   int `json:"id"`
+	ID   int  `json:"id"`
 	User User `json:"user"`
 }
 
@@ -98,7 +98,7 @@ type errorResponse struct {
 
 // Post Routes
 func (c *Client) GetPost(id int) (Post, error) {
-	return c.submitSinglePostRequest(postUrl + "/" + strconv.Itoa(id), nil)
+	return c.submitSinglePostRequest(postUrl+"/"+strconv.Itoa(id), nil)
 }
 
 func (c *Client) GetPosts() ([]Post, error) {
@@ -107,34 +107,42 @@ func (c *Client) GetPosts() ([]Post, error) {
 
 func (c *Client) GetPreviousPosts(daysAgo int) ([]Post, error) {
 	values := &url.Values{
-		"days_ago": { strconv.Itoa(daysAgo) },
+		"days_ago": {strconv.Itoa(daysAgo)},
 	}
 	return c.submitPostRequest(postUrl, values)
 }
 
 func (c *Client) GetPostsOnDay(day string) ([]Post, error) {
 	values := &url.Values{
-		"day": { day },
+		"day": {day},
 	}
 	return c.submitPostRequest(postUrl, values)
 }
 
-func (c *Client) GetAllPosts(searchUrl string, olderThanID int, newerThanID int, count int) ([]Post, error) {	
+func (c *Client) GetAllPosts(searchUrl string, olderThanID int, newerThanID int, count int) ([]Post, error) {
 	values := &url.Values{}
-	if searchUrl != ""  { values.Add("search[url]", searchUrl)     }
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	
+	if searchUrl != "" {
+		values.Add("search[url]", searchUrl)
+	}
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+
 	return c.submitPostRequest(postAllUrl, values)
 }
 
 func (c *Client) CreatePost(link string, name string, tagline string) (Post, error) {
 	values := &url.Values{
-		"action": { "POST" },
-		"url": { link },
-		"name": { name },
-		"tagline": { tagline },
+		"action":  {"POST"},
+		"url":     {link},
+		"name":    {name},
+		"tagline": {tagline},
 	}
 	return c.submitSinglePostRequest(postUrl, values)
 }
@@ -157,18 +165,25 @@ func (c *Client) submitSinglePostRequest(url string, values *url.Values) (Post, 
 	return postmap.Post, nil
 }
 
-
 // User Routes
 func (c *Client) GetUser(username string) (User, error) {
 	return c.submitShowUserRequest(userUrl + "/" + username)
 }
 
-func (c *Client) GetAllUsers(olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+func (c *Client) GetAllUsers(olderThanID int, newerThanID int, count int, order string) ([]User, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	return c.submitUserRequest(userUrl, values)
 }
@@ -191,26 +206,40 @@ func (c *Client) submitShowUserRequest(url string) (User, error) {
 	return usermap.User, nil
 }
 
-
 // Vote Routes
-func (c *Client) GetPostVotes(postID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {	
+func (c *Client) GetPostVotes(postID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(postID)
 	return c.submitVoteRequest(fmt.Sprintf(postVoteUrl, id), values)
 }
 
-
-func (c *Client) GetUserVotes(userID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {	
+func (c *Client) GetUserVotes(userID int, olderThanID int, newerThanID int, count int, order string) ([]Vote, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(userID)
 	return c.submitVoteRequest(fmt.Sprintf(userVoteUrl, id), values)
@@ -223,9 +252,9 @@ func (c *Client) VoteForPost(postID int, voting bool) (Vote, error) {
 	} else {
 		action = "DELETE"
 	}
-	values := &url.Values{ 
-		"action": { action },
-		"post_id": { strconv.Itoa(postID) },
+	values := &url.Values{
+		"action":  {action},
+		"post_id": {strconv.Itoa(postID)},
 	}
 
 	id := strconv.Itoa(postID)
@@ -246,26 +275,40 @@ func (c *Client) submitVoteRequest(url string, values *url.Values) ([]Vote, erro
 	return votemap.Votes, nil
 }
 
-
 // Comment Routes
-func (c *Client) GetPostComments(postID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {	
+func (c *Client) GetPostComments(postID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(postID)
 	return c.submitCommentRequest(fmt.Sprintf(postCommentUrl, id), values)
 }
 
-
-func (c *Client) GetUserComments(userID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {	
+func (c *Client) GetUserComments(userID int, olderThanID int, newerThanID int, count int, order string) ([]Comment, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(userID)
 	return c.submitCommentRequest(fmt.Sprintf(userCommentUrl, id), values)
@@ -273,10 +316,10 @@ func (c *Client) GetUserComments(userID int, olderThanID int, newerThanID int, c
 
 func (c *Client) CreateComment(postID int, parentCommentID int, body string) (Comment, error) {
 	values := &url.Values{
-		"action": { "POST" },
-		"body": { body },
+		"action": {"POST"},
+		"body":   {body},
 	}
-	if parentCommentID != -1 { 
+	if parentCommentID != -1 {
 		values.Add("parent_comment_id", strconv.Itoa(parentCommentID))
 	}
 	id := strconv.Itoa(postID)
@@ -285,14 +328,14 @@ func (c *Client) CreateComment(postID int, parentCommentID int, body string) (Co
 
 func (c *Client) UpdateComment(commentID int, parentCommentID int, body string) (Comment, error) {
 	values := &url.Values{
-		"action": { "PUT" },
-		"body": { body },
+		"action": {"PUT"},
+		"body":   {body},
 	}
-	if parentCommentID != -1 { 
+	if parentCommentID != -1 {
 		values.Add("parent_comment_id", strconv.Itoa(parentCommentID))
 	}
 	id := strconv.Itoa(commentID)
-	return c.submitSingleCommentRequest(commentUrl + "/" + id, values)
+	return c.submitSingleCommentRequest(commentUrl+"/"+id, values)
 }
 
 func (c *Client) submitCommentRequest(url string, values *url.Values) ([]Comment, error) {
@@ -313,21 +356,28 @@ func (c *Client) submitSingleCommentRequest(url string, values *url.Values) (Com
 	return commentmap.Comment, nil
 }
 
-
 // Notification Routes
-func (c *Client) GetNotifications(olderThanID int, newerThanID int, count int, order string) ([]Notification, error) {	
+func (c *Client) GetNotifications(olderThanID int, newerThanID int, count int, order string) ([]Notification, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	return c.submitNotificationRequest(notifUrl, values)
 }
 
 func (c *Client) ClearNotifications() ([]Notification, error) {
-	values := &url.Values {
-		"action": { "DELETE" },
+	values := &url.Values{
+		"action": {"DELETE"},
 	}
 	return c.submitNotificationRequest(notifUrl, values)
 }
@@ -341,25 +391,40 @@ func (c *Client) submitNotificationRequest(url string, values *url.Values) ([]No
 	return notifmap.Notifs, nil
 }
 
-
 // Follow Routes
-func (c *Client) GetFollowers(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+func (c *Client) GetFollowers(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(userID)
 	return c.submitFollowersRequest(fmt.Sprintf(followerUrl, id), values)
 }
 
-func (c *Client) GetFollowing(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {	
+func (c *Client) GetFollowing(userID int, olderThanID int, newerThanID int, count int, order string) ([]User, error) {
 	values := &url.Values{}
-	if olderThanID > -1 { values.Add("older", strconv.Itoa(olderThanID)) }
-	if newerThanID > -1 { values.Add("newer", strconv.Itoa(newerThanID)) }
-	if count > -1       { values.Add("per_page", strconv.Itoa(count))    }
-	if order != ""      { values.Add("order", order)                     }
+	if olderThanID > -1 {
+		values.Add("older", strconv.Itoa(olderThanID))
+	}
+	if newerThanID > -1 {
+		values.Add("newer", strconv.Itoa(newerThanID))
+	}
+	if count > -1 {
+		values.Add("per_page", strconv.Itoa(count))
+	}
+	if order != "" {
+		values.Add("order", order)
+	}
 
 	id := strconv.Itoa(userID)
 	return c.submitFollowingRequest(fmt.Sprintf(followingUrl, id), values)
@@ -373,7 +438,7 @@ func (c *Client) Follow(userID int, following bool) (User, error) {
 		action = "DELETE"
 	}
 	values := &url.Values{
-		"action": { action },
+		"action": {action},
 	}
 
 	id := strconv.Itoa(userID)
@@ -391,9 +456,9 @@ func (c *Client) submitFollowersRequest(url string, values *url.Values) ([]User,
 	if err != nil {
 		return nil, err
 	}
-	
+
 	users := make([]User, len(usermap.Data))
-	
+
 	for i := 0; i < len(usermap.Data); i++ {
 		users[i] = usermap.Data[i].User
 	}
@@ -406,21 +471,22 @@ func (c *Client) submitFollowingRequest(url string, values *url.Values) ([]User,
 	if err != nil {
 		return nil, err
 	}
-	
+
 	users := make([]User, len(usermap.Data))
-	
+
 	for i := 0; i < len(usermap.Data); i++ {
 		users[i] = usermap.Data[i].User
 	}
 	return users, nil
 }
 
-
 // Related Links Route
 func (c *Client) GetRelatedLinks(searchUrl string) ([]RelatedLink, error) {
 	values := &url.Values{}
-	if searchUrl != ""  { values.Add("search[url]", searchUrl) }
-	
+	if searchUrl != "" {
+		values.Add("search[url]", searchUrl)
+	}
+
 	linkmap := &relatedLinkResponse{}
 	err := c.submitJsonRequest(relLinkUrl, values, linkmap)
 	if err != nil {
@@ -428,7 +494,6 @@ func (c *Client) GetRelatedLinks(searchUrl string) ([]RelatedLink, error) {
 	}
 	return linkmap.Links, nil
 }
-
 
 // Settings Route
 func (c *Client) GetSettings() (UserSettings, error) {
@@ -440,14 +505,13 @@ func (c *Client) GetSettings() (UserSettings, error) {
 	return setmap.Settings, nil
 }
 
-
 // Get a JSON Response using an arbitrary JSON template
 func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct interface{}) error {
 	req := &Request{
-		url: url,
+		url:    url,
 		values: values,
 	}
-	
+
 	response, err := c.sendRequest(req)
 	if err != nil {
 		errorstruct := &errorResponse{}
