@@ -505,6 +505,14 @@ func (c *Client) GetSettings() (UserSettings, error) {
 	return setmap.Settings, nil
 }
 
+func (c *Client) UpdateSettings(settings *UserSettings) error {
+	setmap := &settingsResponse{}
+	values := jsonStructToValues(settings)
+	values.Add("action", "PUT")
+	err := c.submitJsonRequest(settingsUrl, values, setmap)
+	return err
+}
+
 // Get a JSON Response using an arbitrary JSON template
 func (c *Client) submitJsonRequest(url string, values *url.Values, jsonStruct interface{}) error {
 	req := &Request{

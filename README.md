@@ -105,11 +105,11 @@ client.GetRelatedLinks([searchUrl string])
 client.GetNotifications([olderThanID int], [newerThanID int], [count int], [order string])
 client.ClearNotifications()
 client.GetSettings()
+client.UpdateSettings(settings *UserSettings)
 ```
 
 ### Missing Requests
 
-* [Settings#Update](https://api.producthunt.com/v1/docs/settings/settings_update_update_your_details)
 * [RelatedLinks#Create/Update/Destroy](https://api.producthunt.com/v1/docs/related_links/related_links_create_create_a_related_link)
 * [Suggestions#Create](https://api.producthunt.com/v1/docs/suggestions/suggestions_create_create_a_suggestion)
 

@@ -150,8 +150,10 @@ func TestGetRelatedLinks(t *testing.T) {
 
 
 // Settings Route
-func TestGetSettings(t *testing.T) {
+func TestSettings(t *testing.T) {
 	initClient(t)
-	_, err := client.GetSettings()
+	settings, err := client.GetSettings()
+	checkErr(t, err)
+	err = client.UpdateSettings(&settings)
 	checkErr(t, err)
 }
